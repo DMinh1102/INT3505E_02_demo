@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Library</title>
+</head>
+<body>
+    <h1>Hệ thống thư viện</h1>
+
+    <h2>Thêm sách</h2>
+    <form action="/add" method="post">
+        Tên sách: <input type="text" name="title" required>
+        Tác giả: <input type="text" name="author" required>
+        <button type="submit">Thêm</button>
+    </form>
+
+    <h2>Danh sách sách</h2>
+    <ul>
+        {% for book in books %}
+            <li>
+                <b>{{ book.title }}</b> - {{ book.author }}
+                {% if book.available %}
+                    [Còn] <a href="/borrow/{{ book.id }}">Mượn</a>
+                {% else %}
+                    [Đang mượn] <a href="/return/{{ book.id }}">Trả</a>
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
