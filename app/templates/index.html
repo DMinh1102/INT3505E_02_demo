@@ -16,14 +16,14 @@
     <h2>Danh sách sách</h2>
     <ul>
         {% for book in books %}
-            <li>
-                <b>{{ book.title }}</b> - {{ book.author }}
-                {% if book.available %}
-                    [Còn] <a href="/borrow/{{ book.id }}">Mượn</a>
-                {% else %}
-                    [Đang mượn] <a href="/return/{{ book.id }}">Trả</a>
-                {% endif %}
-            </li>
+        <li>
+            {{ book.title }} by {{ book.author }}
+            {% if book.available %}
+                <strong>(Available)</strong>
+            {% else %}
+                <strong>(Borrowed)</strong>
+            {% endif %}
+        </li>
         {% endfor %}
     </ul>
 </body>
