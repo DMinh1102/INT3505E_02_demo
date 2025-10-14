@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify, request
-from .models import db, Book
+from .models import db, Book, Loan
 
 bp = Blueprint('routes', __name__)
 
@@ -43,24 +43,46 @@ def delete_book(book_id):
     db.session.commit()
     return jsonify({"message": "Book deleted"})
 
-@bp.route('/books/<int:book_id>/borrow', methods=['POST'])
-def borrow_book(book_id):
-    book = Book.query.get(book_id)
-    if not book:
-        return jsonify({"message": "Book not found"}), 404
-    if book.state == 'borrowed':
-        return jsonify({"message": "Book already borrowed"}), 400
-    book.state = 'borrowed'
-    db.session.commit()
-    return jsonify({"message": "Book borrowed", "book": book.to_dict()})
+# List all loans
+@bp.route('/loans', methods=['GET'])
+def get_loans():
+    loans = Loan.query.all()
+    return jsonify([l.to_dict() for l in loans])
 
-@bp.route('/books/<int:book_id>/return', methods=['POST'])
-def return_book(book_id):
+# Borrow (create a loan)
+@bp.route('/loans', methods=['POST'])
+def borrow_book():
+    data = request.get_json()
+    book_id = data.get('book_id')
+    borrower_name = data.get('borrower_name')
+
+    if not book_id or not borrower_name:
+        return jsonify({"message": "book_id and borrower_name are required"}), 400
+
     book = Book.query.get(book_id)
     if not book:
         return jsonify({"message": "Book not found"}), 404
-    if book.state == 'available':
-        return jsonify({"message": "Book is not borrowed"}), 400
-    book.state = 'available'
+    if book.is_borrowed:
+        return jsonify({"message": "Book already borrowed"}), 400
+
+    loan = Loan(book_id=book_id, borrower_name=borrower_name)
+    book.is_borrowed = True
+
+    db.session.add(loan)
     db.session.commit()
-    return jsonify({"message": "Book returned", "book": book.to_dict()})
+
+    return jsonify(loan.to_dict()), 201
+
+# Return (delete a loan)
+@bp.route('/loans/<int:loan_id>', methods=['DELETE'])
+def return_book(loan_id):
+    loan = Loan.query.get(loan_id)
+    if not loan:
+        return jsonify({"message": "Loan not found"}), 404
+
+    book = Book.query.get(loan.book_id)
+    book.is_borrowed = False
+
+    db.session.delete(loan)
+    db.session.commit()
+    return jsonify({"message": f"Book '{book.title}' returned successfully"})
