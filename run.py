@@ -1,4 +1,4 @@
-from v2 import create_app
+from v3 import create_app
 
 app = create_app()
 
