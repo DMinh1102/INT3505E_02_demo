@@ -13,7 +13,7 @@ def get_books():
     tags:
       - Books
     security:
-      - Bearer: []
+      - BearerAuth: []
     responses:
       200:
         description: List of all books
@@ -55,7 +55,7 @@ def get_book(book_id):
     tags:
       - Books
     security:
-      - Bearer: []
+      - BearerAuth: []
     parameters:
       - name: book_id
         in: path
@@ -94,35 +94,61 @@ def add_book():
     tags:
       - Books
     security:
-      - Bearer: []
-    consumes:
-      - application/json
-    parameters:
-      - in: body
-        name: body
-        required: true
-        schema:
-          type: object
-          required:
-            - title
-            - author
-          properties:
-            title:
-              type: string
-            author:
-              type: string
+      - BearerAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - title
+              - author
+            properties:
+              title:
+                type: string
+                example: "The Great Gatsby"
+              author:
+                type: string
+                example: "F. Scott Fitzgerald"
     responses:
       201:
         description: Book successfully created
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: integer
+                  example: 1
+                title:
+                  type: string
+                  example: "The Great Gatsby"
+                author:
+                  type: string
+                  example: "F. Scott Fitzgerald"
+                created_at:
+                  type: string
+                  format: date-time
       400:
         description: Invalid input
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                error:
+                  type: string
+                  example: "Missing required fields"
+      401:
+        $ref: '#/components/responses/Unauthorized'
     """
     data = request.get_json()
     new_book = Book(title=data['title'], author=data['author'])
     db.session.add(new_book)
     db.session.commit()
     return jsonify(new_book.to_dict()), 201
-
 
 @bp.route('/books/<int:book_id>', methods=['PUT'])
 @jwt_required()
@@ -133,7 +159,7 @@ def update_book(book_id):
     tags:
       - Books
     security:
-      - Bearer: []
+      - BearerAuth: []
     parameters:
       - name: book_id
         in: path
@@ -175,7 +201,7 @@ def delete_book(book_id):
     tags:
       - Books
     security:
-      - Bearer: []
+      - BearerAuth: []
     parameters:
       - name: book_id
         in: path
@@ -205,7 +231,7 @@ def get_loans():
     tags:
       - Loans
     security:
-      - Bearer: []
+      - BearerAuth: []
     responses:
       200:
         description: List of all loan records
@@ -243,7 +269,7 @@ def borrow_book():
     tags:
       - Loans
     security:
-      - Bearer: []
+      - BearerAuth: []
     consumes:
       - application/json
     parameters:
@@ -299,7 +325,7 @@ def return_book(loan_id):
     tags:
       - Loans
     security:
-      - Bearer: []
+      - BearerAuth: []
     parameters:
       - name: loan_id
         in: path

@@ -2,8 +2,7 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_jwt_extended import JWTManager
 from flasgger import Swagger
-from . import swagger_config
-
+from .swagger_config import template
 db = SQLAlchemy()
 
 def create_app():
@@ -19,7 +18,7 @@ def create_app():
 
     db.init_app(app)
     jwt = JWTManager(app)
-    Swagger(app, template = swagger_config.template)
+    swagger = Swagger(app, template= template)
 
     # Create tables
     from . import models
