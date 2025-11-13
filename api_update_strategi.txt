@@ -1,0 +1,40 @@
+#Chiến lược nâng cấp từ v1 sang v2 cho một API thanh toán
+
+Bước chuẩn bị:
+- Xác định thời gian hỗ trợ v1
+- Xây dựng lộ trình chuyển đổi từ v1 sang v2
+- Xây dựng tài liệu hỗ trợ cho quá trình chuyển đổi
+
+
+Bước triển khai:
+
+1. Giữ API v1 vẫn tương thích (tương thích ngược/backward compatibility)
+- API v1 vẫn cần hoạt động trong thời gian nhất định (VD: 6 tháng - 1 năm) để
+các hệ thống sử dụng API có thể thực hiện chuyển giao (transition), nâng cấp 
+hệ thống.
+- Do API thuộc loại yêu cầu sự chuẩn xác cao nên thời gian chuyển giao có 
+thể kéo dài hơn các API ít quan trọng hơn.
+- Cần xây dựng hệ thống sao cho API khác version khác nhau vẫn có thể tương 
+tác với nhau (intercompatibility) do thời gian triển khai của mỗi người/ tập
+thể/ tổ chức có thể khác nhau (sử dụng 1 hệ thống trung gian).
+- Thông báo về việc phase API v1 ra và khuyển cáo nâng cấp lên v2
+
+2. Đánh dấu v1 là deprecated
+- Có thể thêm header warning 299 (deprecated) trong respone để thông báo về 
+thời gian hỗ trợ còn lại.
+
+3. Hướng dẫn migration sang v2
+- Xây dựng tài liệu và cung cấp chi tiết các thay đổi giữa 2 version:
+    + Endpoint/ path mới
+    + Thay đổi payload request/ respone
+    + Thay đổi trong việc xác thực (auth) 
+    + Các thay đổi trong yêu cầu (bảo mật, phần cứng, phần mềm bổ trợ, ...)
+    + Các tính năng mới hoặc cải tiến
+- Cung cấp tài liệu hướng dẫn cách chuyển đổi từ v1 sang v2.
+- Cung cấp SDK (software developement kit) hoặc code mẫu để giảm độ phức tạp
+cũng như sai sót trong chuyển đổi
+
+4. Thông báo và theo dõi
+- Gửi thông báo cho các developer bằng email, dashboard thông báo trên trang web về
+ngày deprecation và timeline
+- Theo dõi các client còn sử dụng v1 và alert khi gần deadline.
