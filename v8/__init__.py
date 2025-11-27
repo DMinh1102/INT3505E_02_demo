@@ -3,6 +3,7 @@ from flask_jwt_extended import JWTManager
 from flasgger import Swagger
 from .swagger_config import template
 from flask_mongoengine import MongoEngine
+from .webhook import webhook_bp
 
 db = MongoEngine()
 
@@ -31,5 +32,6 @@ def create_app():
     from .auth import auth_bp
     app.register_blueprint(routes_bp)
     app.register_blueprint(auth_bp)
+    app.register_blueprint(webhook_bp)
 
     return app
